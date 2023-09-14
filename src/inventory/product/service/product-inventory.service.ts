@@ -38,11 +38,40 @@ export class ProductInventoryService {
         
         const productInventory = await this.productInventoryRepository.create(createProductInventoryDto);
         await productInventory.save();
-        
-        // productDB.qty = productInventory.balance_end;
-        // await this.productsService.updateProductQty(productDB);
 
         return productInventory;
+    }
+
+    async createBatch(
+        createProductInventoryDto:CreateProductInventoryDto, 
+        username: string): Promise<ProductInventory[]> 
+    {
+        
+        // get total count of products enabled only
+        const products = await this.productsService.getAllEnabled();
+        console.log('create batch products.length', products.length);
+        
+        products.forEach(async (product) => {
+            
+            // check product and date today if already added in the inventory
+            const productInventoryDB = await this.findByProduct(product.id);
+            if(productInventoryDB == null){
+                createProductInventoryDto.created_by = username;
+                createProductInventoryDto.updated_by = username;
+            
+                createProductInventoryDto.product = product;
+                createProductInventoryDto.balance_begin = product.qty; //set balance begin from product qty
+                createProductInventoryDto.product_in = 0;
+                createProductInventoryDto.total = 0;
+                createProductInventoryDto.product_out = 0;
+                createProductInventoryDto.balance_end = 0;
+                console.log(createProductInventoryDto.product.id);
+                const productInventory = await this.productInventoryRepository.create(createProductInventoryDto);
+                await productInventory.save();
+            }
+        });
+
+        return this.getAll(new Date());
     }
 
     /* get all product inventory */

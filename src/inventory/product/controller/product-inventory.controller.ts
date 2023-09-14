@@ -21,6 +21,14 @@ export class ProductInventoryController {
     return this.productInventoryService.create(createProductInventoryDto, user.username);
   }
 
+  @Post('/create-batch')
+  createBatch(
+    @RequestGetUser() user: User,
+    @Body() createProductInventoryDto:CreateProductInventoryDto): Promise<ProductInventory[]> 
+  {
+    return this.productInventoryService.createBatch(createProductInventoryDto, user.username);
+  }
+
   @Get(':filterDate')
   async getAll(@Param('filterDate') filterDate: Date): Promise<ProductInventory[]> {
     return this.productInventoryService.getAll(filterDate);

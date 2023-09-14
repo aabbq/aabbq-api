@@ -9,6 +9,12 @@ export class CreateProductInventoryDto {
     
     balance_end: number;
 
+    product_in: number;
+
+    total: number;
+    
+    product_out: number;
+
     created_by: string;
 
     updated_by: string;

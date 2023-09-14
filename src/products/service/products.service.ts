@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from '../models/entities/product.entity';
-import { MoreThan, Repository } from 'typeorm';
+import { DeleteResult, MoreThan, Repository } from 'typeorm';
 import { CreateProductDto } from '../models/dto/create-product.dto';
 import { CommonErrors } from 'src/shared/errors/common/common-errors';
 import { ProductErrors } from 'src/shared/errors/product/product.errors';
@@ -61,6 +61,14 @@ export class ProductsService {
         } catch (err) {
             throw new InternalServerErrorException(CommonErrors.ServerError);
         }
+    }
+
+    async getCount() {
+        const count = await this.productRepository
+            .createQueryBuilder("product")
+            .where("product.status = :status", { status: "Enabled" })
+            .getCount()
+        return count;
     }
 
     /* find product by id */
@@ -132,5 +140,9 @@ export class ProductsService {
                 name: productName,
             },
         });
+    }
+
+    async delete(productId: number): Promise<DeleteResult> {
+        return await this.productRepository.delete(productId);
     }
 }

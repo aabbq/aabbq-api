@@ -1,0 +1,1 @@
+C:\Program Files\MySQL\MySQL Server 8.1\bin>mysqldump -u root -p aabbq-api > C:\Users\User\Desktop\aabbp-app\mysqldump\091923.sql

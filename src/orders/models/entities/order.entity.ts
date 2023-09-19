@@ -1,6 +1,6 @@
 import { OrderType, PaymentType } from "src/enums/order.enum";
 import { ColumnNumericTransformer } from "src/utils/helper";
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, AfterLoad, BeforeUpdate, ManyToOne } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, AfterLoad, BeforeUpdate, ManyToOne, BeforeInsert } from "typeorm";
 import { OrderDetail } from "./order-detail.entity";
 
 @Entity()
@@ -34,8 +34,9 @@ export class Order extends BaseEntity {
     })
     details: OrderDetail[];
 
-    @AfterLoad()
+    // @AfterLoad()
     @BeforeUpdate()
+    @BeforeInsert()
     updateTotalAmount() {
         let totalDetailAmount = 0;
         if (this.details != null && this.details.length > 0) {
@@ -44,7 +45,14 @@ export class Order extends BaseEntity {
               totalDetailAmount += detail.total;
             }
       
-            this.total_amount = Math.round(totalDetailAmount * 100) / 100;
+            this.total_amount = (Math.round(totalDetailAmount * 100) / 100) - this.total_discount;
+            if (this.credit_card_amount > 0){
+                this.cash_amount -= this.credit_card_amount;
+            } else {
+                if (this.payment_type == PaymentType.CASH) {
+                    this.cash_amount = this.total_amount + this.total_discount;
+                }
+            }
         }
     }
 
@@ -95,6 +103,12 @@ export class Order extends BaseEntity {
 
     @Column({ default : '' })
     credit_card_ref_num: string;
+
+    @Column("decimal", {
+        precision: 11, scale: 2, default: 0,
+        transformer: new ColumnNumericTransformer(),
+    })
+    total_discount: number;
 
     @Column()
     @CreateDateColumn()

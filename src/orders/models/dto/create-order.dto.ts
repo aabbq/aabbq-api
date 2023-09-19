@@ -28,6 +28,8 @@ export class CreateOrderDto {
     credit_card_bank: string;
 
     credit_card_ref_num: string;
+
+    total_discount: number;
     
     created_by: string;
 

@@ -61,6 +61,7 @@ export class OrderService {
                 credit_card_amount: true,
                 credit_card_bank: true,
                 credit_card_ref_num: true,
+                total_discount: true,
                 created_at: true,
                 updated_at: true,
                 created_by: true,
@@ -130,6 +131,7 @@ export class OrderService {
         order.credit_card_amount = updateOrderDto.credit_card_amount;
         order.credit_card_bank = updateOrderDto.credit_card_bank;
         order.credit_card_ref_num = updateOrderDto.credit_card_ref_num;
+        order.total_discount = updateOrderDto.total_discount;
 
         // Save updated 
         await this.orderRepository.save(order);

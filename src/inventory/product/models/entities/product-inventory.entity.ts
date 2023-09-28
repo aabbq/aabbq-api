@@ -1,3 +1,4 @@
+import { CutOff } from "src/enums/product-inventory.enum";
 import { Product } from "src/typeorm";
 import { ColumnNumericTransformer } from "src/utils/helper";
 import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, BeforeInsert, BeforeUpdate } from "typeorm";
@@ -51,6 +52,9 @@ export class ProductInventory extends BaseEntity {
         transformer: new ColumnNumericTransformer(),
     })
     total_prices: number; // Total Prices
+
+    @Column({ type: "enum", enum: CutOff, default: CutOff.AM })
+    cutoff: CutOff;
 
     @Column()
     @CreateDateColumn()

@@ -1,4 +1,6 @@
+import { IsEnum } from "class-validator";
 import { OrderType, PaymentType } from "src/enums/order.enum";
+import { CutOff } from "src/enums/product-inventory.enum";
 
 export class CreateOrderDto {
     ordered_to: string;
@@ -30,6 +32,9 @@ export class CreateOrderDto {
     credit_card_ref_num: string;
 
     total_discount: number;
+    
+    @IsEnum(CutOff)
+    cutoff: CutOff;
     
     created_by: string;
 

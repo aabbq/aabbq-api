@@ -1,4 +1,5 @@
 import { OrderType, PaymentType } from "src/enums/order.enum";
+import { CutOff } from "src/enums/product-inventory.enum";
 import { ColumnNumericTransformer } from "src/utils/helper";
 import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, AfterLoad, BeforeUpdate, ManyToOne, BeforeInsert } from "typeorm";
 import { OrderDetail } from "./order-detail.entity";
@@ -110,6 +111,9 @@ export class Order extends BaseEntity {
     })
     total_discount: number;
 
+    @Column({ type: "enum", enum: CutOff, default: CutOff.AM })
+    cutoff: CutOff;
+    
     @Column()
     @CreateDateColumn()
     created_at: Date;

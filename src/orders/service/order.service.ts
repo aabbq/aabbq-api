@@ -6,6 +6,7 @@ import { Order } from '../models/entities/order.entity';
 import { CreateOrderDto } from '../models/dto/create-order.dto';
 import { OrderErrors } from 'src/shared/errors/order/order.errors';
 import { UpdateOrderDto } from '../models/dto/update-order.dto';
+import { CutOff } from 'src/enums/product-inventory.enum';
 
 @Injectable()
 export class OrderService {
@@ -62,6 +63,7 @@ export class OrderService {
                 credit_card_bank: true,
                 credit_card_ref_num: true,
                 total_discount: true,
+                cutoff: true,
                 created_at: true,
                 updated_at: true,
                 created_by: true,
@@ -70,6 +72,52 @@ export class OrderService {
             order: { transaction_date: "DESC" },
             where: {
                 transaction_date: Between(today, tomorrow),
+            }
+           });
+        } catch (err) {
+            throw new InternalServerErrorException(CommonErrors.ServerError);
+        }
+    }
+
+    async getAllCutOff(filterDate: Date, cut_off: string): Promise<Order[]> {
+        const today = new Date(filterDate);
+        today.setHours(0, 0, 0, 0);
+
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1); 
+
+        let cutOff = CutOff.AM;
+        if(cut_off === 'PM') cutOff = CutOff.PM;
+
+        try {
+           return await this.orderRepository.find({
+            select: {
+                id: true,
+                transaction_date: true,
+                or_number: true,
+                ordered_to: true,
+                total_amount: true,
+                payment_type: true,
+                order_type: true,
+                cash_amount: true,
+                gcash_amount: true,
+                grab_amount: true,
+                panda_amount: true,
+                credit_card: true,
+                credit_card_amount: true,
+                credit_card_bank: true,
+                credit_card_ref_num: true,
+                total_discount: true,
+                cutoff: true,
+                created_at: true,
+                updated_at: true,
+                created_by: true,
+                updated_by: true
+            },
+            order: { transaction_date: "DESC" },
+            where: {
+                transaction_date: Between(today, tomorrow),
+                cutoff: cutOff
             }
            });
         } catch (err) {
@@ -132,6 +180,7 @@ export class OrderService {
         order.credit_card_bank = updateOrderDto.credit_card_bank;
         order.credit_card_ref_num = updateOrderDto.credit_card_ref_num;
         order.total_discount = updateOrderDto.total_discount;
+        order.cutoff = updateOrderDto.cutoff;
 
         // Save updated 
         await this.orderRepository.save(order);

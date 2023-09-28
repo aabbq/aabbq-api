@@ -1,5 +1,6 @@
 import { Controller, Post, Body, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CutOff } from 'src/enums/product-inventory.enum';
 import { User } from 'src/typeorm';
 import { RequestGetUser } from 'src/users/decorator/user.decorator';
 import { CreateProductInventoryDto } from '../models/dto/create-product-inventory.dto';
@@ -21,22 +22,31 @@ export class ProductInventoryController {
     return this.productInventoryService.create(createProductInventoryDto, user.username);
   }
 
-  @Post('/create-batch')
+  @Post('/create-batch/:cut_off')
   createBatch(
     @RequestGetUser() user: User,
+    @Param('cut_off') cut_off: string,
     @Body() createProductInventoryDto:CreateProductInventoryDto): Promise<ProductInventory[]> 
   {
-    return this.productInventoryService.createBatch(createProductInventoryDto, user.username);
-  }
-
-  @Get(':filterDate')
-  async getAll(@Param('filterDate') filterDate: Date): Promise<ProductInventory[]> {
-    return this.productInventoryService.getAll(filterDate);
+    return this.productInventoryService.createBatch(createProductInventoryDto, user.username, cut_off);
   }
 
   @Get('/edit/:id')
   async getById(@Param('id') id: number): Promise<ProductInventory>{
-      return await this.productInventoryService.findById(id);
+    const prodInv = await this.productInventoryService.findById(id);
+    return prodInv;
+  }
+
+  @Get(':filterDate/:cut_off')
+  async getAll(
+    @Param('filterDate') filterDate: Date,
+    @Param('cut_off') cut_off: string
+  ): Promise<ProductInventory[]> {
+    if(cut_off == 'ALL'){
+      return this.productInventoryService.getAll(filterDate);
+    } else {
+      return this.productInventoryService.getAllCutOff(filterDate, cut_off);
+    }
   }
 
   @Put(':id')

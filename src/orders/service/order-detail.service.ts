@@ -39,8 +39,11 @@ export class OrderDetailService {
             throw new ConflictException(OrderErrors.ConflictQuantity);
         }
 
+        // get order
+        const orderDB = await this.orderService.findById(createOrderDetailDto.orderId);
+
         // update product inventory out
-        const prodInv = await this.productInventoryService.findByProduct(productDB.id);
+        const prodInv = await this.productInventoryService.findByProductAndCutOff(productDB.id, orderDB.cutoff);
         if(!prodInv){
             throw new NotFoundException(ProductErrors.ProductInventoryNotFound);
         } 
@@ -52,12 +55,8 @@ export class OrderDetailService {
         prodInv.total_prices += orderDetail.total;
         await this.productInventoryService.updateProductInventory(prodInv);
 
-        // get order
-        const orderDB = await this.orderService.findById(createOrderDetailDto.orderId);
         orderDB.details.push(orderDetail);
         await this.orderService.updateOrder(orderDB);
-
-        
 
         // update product qty less from order detail qty
         productDB.qty -= orderDetail.qty;
@@ -156,8 +155,11 @@ export class OrderDetailService {
     async delete(id: number): Promise<void> {
         const orderDetail = await this.findById(id);
         
+        // get order update details
+        const orderDB = await this.orderService.findById(orderDetail.order.id);
+
         // update product inventory in
-        const prodInv = await this.productInventoryService.findByProduct(orderDetail.product.id);
+        const prodInv = await this.productInventoryService.findByProductAndCutOff(orderDetail.product.id, orderDB.cutoff);
         prodInv.product_out -= orderDetail.qty;
         prodInv.total_prices -= orderDetail.total;
         await this.productInventoryService.updateProductInventory(prodInv);
@@ -167,9 +169,7 @@ export class OrderDetailService {
         // update product qty add from order detail qty
         productDB.qty += orderDetail.qty;
         await this.productsService.updateProductQty(productDB);
-
-        // get order update details
-        const orderDB = await this.orderService.findById(orderDetail.order.id);
+        
         const indexOfDetail = orderDB.details.findIndex(o => {
             return o.id === orderDetail.id;
         })

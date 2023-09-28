@@ -1,3 +1,4 @@
+import { CutOff } from "src/enums/product-inventory.enum";
 import { Product } from "src/typeorm";
 import { ColumnNumericTransformer } from "src/utils/helper";
 import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from "typeorm";
@@ -25,6 +26,9 @@ export class ProductIn extends BaseEntity {
     @Column("longtext")
     description: string;
 
+    @Column({ type: "enum", enum: CutOff, default: CutOff.AM })
+    cutoff: CutOff;
+    
     @Column()
     @CreateDateColumn()
     created_at: Date;

@@ -32,7 +32,7 @@ export class ProductInService {
         createProductInDto.product = productDB;
 
         // check product inventory if product and transaction date is already created
-        const prodInv = await this.productInventoryService.findByProduct(productDB.id);
+        const prodInv = await this.productInventoryService.findByProductAndCutOff(productDB.id, createProductInDto.cutoff);
         if(!prodInv){
             throw new NotFoundException(ProductErrors.ProductInventoryNotFound);
         } 
@@ -65,6 +65,7 @@ export class ProductInService {
                 id: true,
                 transaction_date: true,
                 qty: true,
+                cutoff: true,
                 created_at: true,
                 updated_at: true,
                 created_by: true,

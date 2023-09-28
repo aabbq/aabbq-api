@@ -7,6 +7,7 @@ import { ProductInventory } from '../models/entities/product-inventory.entity';
 import { CreateProductInventoryDto } from '../models/dto/create-product-inventory.dto';
 import { UpdateProductInventoryDto } from '../models/dto/update-product-inventory.dto';
 import { ProductsService } from 'src/products/service/products.service';
+import { CutOff } from 'src/enums/product-inventory.enum';
 
 @Injectable()
 export class ProductInventoryService {
@@ -29,9 +30,9 @@ export class ProductInventoryService {
 
         createProductInventoryDto.product = productDB;
         createProductInventoryDto.balance_begin = productDB.qty; //set balance begin from product qty
-
-        // check product and date today if already added in the inventory
-        const productInventoryDB = await this.findByProduct(productDB.id);
+        
+        // check product, date today and cutoff if already added in the inventory
+        const productInventoryDB = await this.findByProductAndCutOff(productDB.id, createProductInventoryDto.cutoff);
         if(productInventoryDB){
             throw new NotFoundException(ProductErrors.ProductInventoryConflict);
         } 
@@ -44,17 +45,19 @@ export class ProductInventoryService {
 
     async createBatch(
         createProductInventoryDto:CreateProductInventoryDto, 
-        username: string): Promise<ProductInventory[]> 
+        username: string,
+        cut_off: string): Promise<ProductInventory[]> 
     {
         
         // get total count of products enabled only
         const products = await this.productsService.getAllEnabled();
-        console.log('create batch products.length', products.length);
-        
+        let cutOff = CutOff.AM;
+        if(cut_off === 'PM') cutOff = CutOff.PM;
+
         products.forEach(async (product) => {
             
             // check product and date today if already added in the inventory
-            const productInventoryDB = await this.findByProduct(product.id);
+            const productInventoryDB = await this.findByProductAndCutOff(product.id, cutOff);
             if(productInventoryDB == null){
                 createProductInventoryDto.created_by = username;
                 createProductInventoryDto.updated_by = username;
@@ -65,13 +68,14 @@ export class ProductInventoryService {
                 createProductInventoryDto.total = 0;
                 createProductInventoryDto.product_out = 0;
                 createProductInventoryDto.balance_end = 0;
-                console.log(createProductInventoryDto.product.id);
+                createProductInventoryDto.cutoff = cutOff;
+                
                 const productInventory = await this.productInventoryRepository.create(createProductInventoryDto);
                 await productInventory.save();
             }
         });
 
-        return this.getAll(new Date());
+        return this.getAllCutOff(new Date(), createProductInventoryDto.cutoff);
     }
 
     /* get all product inventory */
@@ -93,6 +97,45 @@ export class ProductInventoryService {
                 product_out: true,
                 balance_end: true,
                 total_prices: true,
+                cutoff: true,
+                created_at: true,
+                updated_at: true,
+                created_by: true,
+                updated_by: true
+            },
+            relations:['product'],
+            order: { transaction_date: "ASC" },
+            where: {
+                transaction_date: Between(today, tomorrow)
+            },
+           });
+        } catch (err) {
+            throw new InternalServerErrorException(CommonErrors.ServerError);
+        }
+    }
+
+    async getAllCutOff(filterDate: Date, cut_off: string): Promise<ProductInventory[]> {
+        const today = new Date(filterDate);
+        today.setHours(0, 0, 0, 0);
+
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1); 
+
+        let cutOff = CutOff.AM;
+        if(cut_off === 'PM') cutOff = CutOff.PM;
+
+        try {
+           return await this.productInventoryRepository.find({
+            select: {
+                id: true,
+                transaction_date: true,
+                balance_begin: true,
+                product_in: true,
+                total: true,
+                product_out: true,
+                balance_end: true,
+                total_prices: true,
+                cutoff: true,
                 created_at: true,
                 updated_at: true,
                 created_by: true,
@@ -102,6 +145,7 @@ export class ProductInventoryService {
             order: { transaction_date: "DESC" },
             where: {
                 transaction_date: Between(today, tomorrow),
+                cutoff: cutOff
             },
            });
         } catch (err) {
@@ -147,6 +191,7 @@ export class ProductInventoryService {
         productInventory.balance_begin = updateProductInventoryDto.balance_begin;
         productInventory.product_in = updateProductInventoryDto.product_in;
         productInventory.product_out = updateProductInventoryDto.product_out;
+        productInventory.cutoff = updateProductInventoryDto.cutoff;
 
         // Save updated 
         await this.productInventoryRepository.save(productInventory);
@@ -169,9 +214,27 @@ export class ProductInventoryService {
         return await this.productInventoryRepository.findOne({
             where: {
                 product: {
-                    id: productId
+                    id: productId,
+                },
+                transaction_date: Between(today, tomorrow)
+            },
+        });
+    }
+
+    async findByProductAndCutOff(productId: number, cut_off: CutOff): Promise<ProductInventory | null> {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1); 
+        console.log(cut_off);
+        return await this.productInventoryRepository.findOne({
+            where: {
+                product: {
+                    id: productId,
                 },
                 transaction_date: Between(today, tomorrow),
+                cutoff: cut_off
             },
         });
     }

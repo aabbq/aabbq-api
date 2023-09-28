@@ -31,7 +31,7 @@ export const ProductErrors = {
 
     ProductInventoryConflict: {
         statusCode: 409,
-        message: 'Product already exists',
+        message: 'Product already created',
         error: "Conflict Error"
     },
 

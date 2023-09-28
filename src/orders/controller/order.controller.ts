@@ -21,9 +21,16 @@ export class OrderController {
     return this.orderService.create(createOrderDto, user.username);
   }
 
-  @Get(':filterDate')
-  async getAll(@Param('filterDate') filterDate: Date): Promise<Order[]> {
-    return this.orderService.getAll(filterDate);
+  @Get(':filterDate/:cut_off')
+  async getAll(@Param('filterDate') filterDate: Date,
+               @Param('cut_off') cut_off: string
+  ): Promise<Order[]> {
+    if(cut_off == 'ALL'){
+      return this.orderService.getAll(filterDate);
+    }else{
+      return this.orderService.getAllCutOff(filterDate, cut_off);
+    }
+    
   }
 
   @Get('/edit/:id')

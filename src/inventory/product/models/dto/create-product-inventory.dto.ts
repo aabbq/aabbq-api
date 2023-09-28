@@ -1,4 +1,5 @@
-import { IsEmpty, IsNotEmptyObject } from 'class-validator';
+import { IsEmpty, IsEnum, IsNotEmptyObject } from 'class-validator';
+import { CutOff } from 'src/enums/product-inventory.enum';
 import { Product } from 'src/typeorm';
 
 export class CreateProductInventoryDto {
@@ -12,6 +13,9 @@ export class CreateProductInventoryDto {
     product_in: number;
 
     total: number;
+
+    @IsEnum(CutOff)
+    cutoff: CutOff;
     
     product_out: number;
 

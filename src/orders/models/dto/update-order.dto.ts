@@ -1,5 +1,6 @@
-import { IsNotEmptyObject } from 'class-validator';
+import { IsEnum, IsNotEmptyObject } from 'class-validator';
 import { OrderType, PaymentType } from 'src/enums/order.enum';
+import { CutOff } from 'src/enums/product-inventory.enum';
 import { Bank, Product } from 'src/typeorm';
 
 export class UpdateOrderDto {
@@ -37,6 +38,9 @@ export class UpdateOrderDto {
     credit_card_ref_num: string;
 
     total_discount: number;
+    
+    @IsEnum(CutOff)
+    cutoff: CutOff;
     
     created_by: string;
 

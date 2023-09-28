@@ -4,6 +4,7 @@ import { ProductInventory } from "src/inventory/product/models/entities/product-
 import { Item } from "src/items/models/entities/item.entity";
 import { OrderDetail } from "src/orders/models/entities/order-detail.entity";
 import { Order } from "src/orders/models/entities/order.entity";
+import { ProductCategory } from "src/products/models/entities/product-category.entity";
 import { Product } from "src/products/models/entities/product.entity";
 import { User } from "src/users/models/entities/user.entity";
 
@@ -15,7 +16,8 @@ const entities = [
   ProductIn,
   Order,
   OrderDetail,
-  Bank
+  Bank,
+  ProductCategory
 ];
 
 export {
@@ -26,7 +28,8 @@ export {
   ProductIn,
   Order,
   OrderDetail,
-  Bank
+  Bank,
+  ProductCategory
 };
 
 export default entities;

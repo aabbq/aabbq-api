@@ -17,4 +17,6 @@ export class UpdateProductDto {
     updated_by: string;
     
     qty: number;
+
+    category: string;
 }

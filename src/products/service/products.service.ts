@@ -117,6 +117,7 @@ export class ProductsService {
         product.uom = updateProductDto.uom;
         product.status = updateProductDto.status;
         product.qty = updateProductDto.qty;
+        product.category = updateProductDto.category;
         product.updated_by = username;
 
         // Save updated product

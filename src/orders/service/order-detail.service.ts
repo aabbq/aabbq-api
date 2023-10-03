@@ -102,6 +102,31 @@ export class OrderDetailService {
         }
     }
 
+    async getAllByOrderId(orderId:number): Promise<OrderDetail[]> {
+        try {
+           return await this.orderDetailRepository.find({
+            select: {
+                id: true,
+                qty: true,
+                price: true,
+                total: true,
+                created_at: true,
+                updated_at: true,
+                created_by: true,
+                updated_by: true
+            },
+            order: { created_at: "DESC" },
+            where: {
+                order: {
+                    id: orderId
+                },
+            },
+           });
+        } catch (err) {
+            throw new InternalServerErrorException(CommonErrors.ServerError);
+        }
+    }
+
     /* find order detail by id */
     async findById(id:number): Promise<OrderDetail> {
         const orderDetail = await this.orderDetailRepository.findOne({

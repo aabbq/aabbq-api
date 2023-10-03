@@ -42,6 +42,10 @@ export class UpdateOrderDto {
     @IsEnum(CutOff)
     cutoff: CutOff;
     
+    total_amount: number;
+
+    detail_total_amount: number;
+    
     created_by: string;
 
     updated_by: string;

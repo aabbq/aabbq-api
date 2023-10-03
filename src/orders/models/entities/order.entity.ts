@@ -1,7 +1,7 @@
 import { OrderType, PaymentType } from "src/enums/order.enum";
 import { CutOff } from "src/enums/product-inventory.enum";
 import { ColumnNumericTransformer } from "src/utils/helper";
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, AfterLoad, BeforeUpdate, ManyToOne, BeforeInsert } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, AfterLoad, BeforeUpdate, BeforeInsert, AfterUpdate } from "typeorm";
 import { OrderDetail } from "./order-detail.entity";
 
 @Entity()
@@ -35,6 +35,12 @@ export class Order extends BaseEntity {
     })
     details: OrderDetail[];
 
+    @Column("decimal", {
+        precision: 11, scale: 2, default: 0,
+        transformer: new ColumnNumericTransformer(),
+    })
+    detail_total_amount: number;
+
     // @AfterLoad()
     @BeforeUpdate()
     @BeforeInsert()
@@ -45,13 +51,15 @@ export class Order extends BaseEntity {
               const detail = this.details[index];
               totalDetailAmount += detail.total;
             }
-      
+            
+            this.detail_total_amount = totalDetailAmount;
+            console.log(totalDetailAmount)
             this.total_amount = (Math.round(totalDetailAmount * 100) / 100) - this.total_discount;
             if (this.credit_card_amount > 0){
                 this.cash_amount -= this.credit_card_amount;
             } else {
                 if (this.payment_type == PaymentType.CASH) {
-                    this.cash_amount = this.total_amount + this.total_discount;
+                    this.cash_amount = this.total_amount;
                 }
             }
         }

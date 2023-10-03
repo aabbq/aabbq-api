@@ -7,13 +7,14 @@ import { CreateOrderDto } from '../models/dto/create-order.dto';
 import { OrderErrors } from 'src/shared/errors/order/order.errors';
 import { UpdateOrderDto } from '../models/dto/update-order.dto';
 import { CutOff } from 'src/enums/product-inventory.enum';
+import { OrderDetailService } from './order-detail.service';
 
 @Injectable()
 export class OrderService {
 
     constructor(
         @InjectRepository(Order) 
-        private readonly orderRepository: Repository<Order>,
+        private readonly orderRepository: Repository<Order>
     ) { }
 
     async create(createOrderDto:CreateOrderDto, username: string): Promise<Order> {
@@ -63,6 +64,7 @@ export class OrderService {
                 credit_card_bank: true,
                 credit_card_ref_num: true,
                 total_discount: true,
+                detail_total_amount: true,
                 cutoff: true,
                 created_at: true,
                 updated_at: true,
@@ -109,6 +111,7 @@ export class OrderService {
                 credit_card_ref_num: true,
                 total_discount: true,
                 cutoff: true,
+                detail_total_amount: true,
                 created_at: true,
                 updated_at: true,
                 created_by: true,
@@ -181,7 +184,9 @@ export class OrderService {
         order.credit_card_ref_num = updateOrderDto.credit_card_ref_num;
         order.total_discount = updateOrderDto.total_discount;
         order.cutoff = updateOrderDto.cutoff;
-
+        order.total_amount = updateOrderDto.total_amount;
+        order.detail_total_amount = updateOrderDto.detail_total_amount;
+        
         // Save updated 
         await this.orderRepository.save(order);
 

@@ -40,6 +40,8 @@ export class CreateOrderDto {
 
     detail_total_amount: number;
     
+    delivery_fee: number;
+    
     created_by: string;
 
     updated_by: string;

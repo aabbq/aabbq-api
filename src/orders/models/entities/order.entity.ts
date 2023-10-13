@@ -53,8 +53,7 @@ export class Order extends BaseEntity {
             }
             
             this.detail_total_amount = totalDetailAmount;
-            console.log(totalDetailAmount)
-            this.total_amount = (Math.round(totalDetailAmount * 100) / 100) - this.total_discount;
+            this.total_amount = ((Math.round(totalDetailAmount * 100) / 100) + this.delivery_fee) - this.total_discount;
             if (this.credit_card_amount > 0){
                 this.cash_amount -= this.credit_card_amount;
             } else {
@@ -122,6 +121,12 @@ export class Order extends BaseEntity {
     @Column({ type: "enum", enum: CutOff, default: CutOff.AM })
     cutoff: CutOff;
     
+    @Column("decimal", {
+        precision: 11, scale: 2, default: 0,
+        transformer: new ColumnNumericTransformer(),
+    })
+    delivery_fee: number;
+
     @Column()
     @CreateDateColumn()
     created_at: Date;

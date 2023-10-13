@@ -66,6 +66,7 @@ export class OrderService {
                 total_discount: true,
                 detail_total_amount: true,
                 cutoff: true,
+                delivery_fee: true,
                 created_at: true,
                 updated_at: true,
                 created_by: true,
@@ -112,6 +113,7 @@ export class OrderService {
                 total_discount: true,
                 cutoff: true,
                 detail_total_amount: true,
+                delivery_fee: true,
                 created_at: true,
                 updated_at: true,
                 created_by: true,
@@ -186,7 +188,8 @@ export class OrderService {
         order.cutoff = updateOrderDto.cutoff;
         order.total_amount = updateOrderDto.total_amount;
         order.detail_total_amount = updateOrderDto.detail_total_amount;
-        
+        order.delivery_fee = updateOrderDto.delivery_fee;
+
         // Save updated 
         await this.orderRepository.save(order);
 

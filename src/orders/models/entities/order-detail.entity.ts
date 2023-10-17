@@ -2,6 +2,7 @@ import { Product } from "src/typeorm";
 import { ColumnNumericTransformer } from "src/utils/helper";
 import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, BeforeInsert, AfterUpdate } from "typeorm";
 import { Order } from "./order.entity";
+import { PaymentType } from "src/enums/order.enum";
 
 @Entity()
 export class OrderDetail extends BaseEntity {
@@ -31,7 +32,7 @@ export class OrderDetail extends BaseEntity {
 
     @ManyToOne(() => Order, (order) => order.details)
     order: Order;
-
+    
     @BeforeInsert()
     @AfterUpdate()
     updateTotal() {

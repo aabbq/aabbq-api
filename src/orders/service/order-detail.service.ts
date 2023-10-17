@@ -10,6 +10,7 @@ import { ProductsService } from 'src/products/service/products.service';
 import { ProductErrors } from 'src/shared/errors/product/product.errors';
 import { OrderService } from './order.service';
 import { ProductInventoryService } from 'src/inventory/product/service/product-inventory.service';
+import { PaymentType } from 'src/enums/order.enum';
 
 @Injectable()
 export class OrderDetailService {
@@ -52,6 +53,19 @@ export class OrderDetailService {
         await orderDetail.save();
 
         prodInv.product_out += orderDetail.qty;
+
+        // add breakdown of qty & prices to default, grab and panda
+        if(orderDB.payment_type == PaymentType.GRAB) {
+            prodInv.grab_qty += orderDetail.qty
+            prodInv.grab_prices += orderDetail.total
+        }else if(orderDB.payment_type == PaymentType.PANDA) {
+            prodInv.panda_qty += orderDetail.qty
+            prodInv.panda_prices += orderDetail.total
+        } else {
+            prodInv.default_qty += orderDetail.qty
+            prodInv.default_prices += orderDetail.total
+        }
+            
         prodInv.total_prices += orderDetail.total;
         await this.productInventoryService.updateProductInventory(prodInv);
 
@@ -186,6 +200,16 @@ export class OrderDetailService {
         // update product inventory in
         const prodInv = await this.productInventoryService.findByProductAndCutOff(orderDetail.product.id, orderDB.cutoff);
         prodInv.product_out -= orderDetail.qty;
+
+        // update breakdown of prices default, grab and panda
+        if(orderDB.payment_type == PaymentType.GRAB) {
+            prodInv.grab_prices -= orderDetail.total
+        }else if(orderDB.payment_type == PaymentType.PANDA) {
+            prodInv.panda_prices -= orderDetail.total
+        } else {
+            prodInv.default_prices -= orderDetail.total
+        }
+        
         prodInv.total_prices -= orderDetail.total;
         await this.productInventoryService.updateProductInventory(prodInv);
 

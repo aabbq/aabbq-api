@@ -56,6 +56,42 @@ export class ProductInventory extends BaseEntity {
     @Column({ type: "enum", enum: CutOff, default: CutOff.AM })
     cutoff: CutOff;
 
+    @Column("decimal", {
+        precision: 11, scale: 2, default: 0,
+        transformer: new ColumnNumericTransformer(),
+    })
+    default_prices: number; // Default Prices
+
+    @Column("decimal", {
+        precision: 11, scale: 2, default: 0,
+        transformer: new ColumnNumericTransformer(),
+    })
+    default_qty: number; // Total default Quantity
+
+    @Column("decimal", {
+        precision: 11, scale: 2, default: 0,
+        transformer: new ColumnNumericTransformer(),
+    })
+    grab_prices: number; // Grab Prices
+
+    @Column("decimal", {
+        precision: 11, scale: 2, default: 0,
+        transformer: new ColumnNumericTransformer(),
+    })
+    grab_qty: number; // Total grab Quantity
+
+    @Column("decimal", {
+        precision: 11, scale: 2, default: 0,
+        transformer: new ColumnNumericTransformer(),
+    })
+    panda_prices: number; // Panda Prices
+
+    @Column("decimal", {
+        precision: 11, scale: 2, default: 0,
+        transformer: new ColumnNumericTransformer(),
+    })
+    panda_qty: number; // Total panda Quantity
+
     @Column()
     @CreateDateColumn()
     created_at: Date;

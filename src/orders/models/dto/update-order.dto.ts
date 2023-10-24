@@ -53,4 +53,6 @@ export class UpdateOrderDto {
     updated_by: string;
 
     created_at: Date;
+
+    transaction_date: Date;
 }

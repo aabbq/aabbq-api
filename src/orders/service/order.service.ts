@@ -189,6 +189,7 @@ export class OrderService {
         order.total_amount = updateOrderDto.total_amount;
         order.detail_total_amount = updateOrderDto.detail_total_amount;
         order.delivery_fee = updateOrderDto.delivery_fee;
+        order.transaction_date = updateOrderDto.transaction_date;
 
         // Save updated 
         await this.orderRepository.save(order);

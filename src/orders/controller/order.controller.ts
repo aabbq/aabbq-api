@@ -35,7 +35,6 @@ export class OrderController {
     }else{
       return this.orderService.getAllCutOff(filterDate, cut_off);
     }
-    
   }
 
   @Put(':id')

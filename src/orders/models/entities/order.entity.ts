@@ -62,7 +62,6 @@ export class Order extends BaseEntity {
                 } else if (this.payment_type == PaymentType.GCASH) {
                     this.gcash_amount = this.total_amount;
                 } else if (this.payment_type == PaymentType.GRAB) {
-                    console.log('GRAB...')
                     this.grab_amount = this.total_amount;
                 } else if (this.payment_type == PaymentType.PANDA) {
                     this.panda_amount = this.total_amount;

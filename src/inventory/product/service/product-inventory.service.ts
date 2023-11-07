@@ -239,7 +239,7 @@ export class ProductInventoryService {
         
         const tomorrow = new Date(today);
         tomorrow.setDate(today.getDate() + 1); 
-        console.log(cut_off);
+        
         return await this.productInventoryRepository.findOne({
             where: {
                 product: {

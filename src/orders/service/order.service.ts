@@ -18,8 +18,6 @@ export class OrderService {
     ) { }
 
     async create(createOrderDto:CreateOrderDto, username: string): Promise<Order> {
-        console.log('create order')
-
         let order = await this.orderRepository.findOne({ 
             where: {or_number: createOrderDto.or_number}
         });

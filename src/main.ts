@@ -3,7 +3,13 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors();
+  app.enableCors({
+  origin: [
+    'https://aabbq.netlify.app',
+  ],
+  methods: ["GET", "POST"],
+  credentials: true,
+});
   app.setGlobalPrefix('aabbq-api');
   await app.listen(3000);
 }
